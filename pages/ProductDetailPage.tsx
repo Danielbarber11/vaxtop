@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import type { PhoneProduct, StorageOption, Variant } from '../types';
 import Chatbot from '../components/Chatbot';
@@ -8,11 +9,12 @@ import { smartwatchProducts } from '../constants';
 interface ProductDetailPageProps {
   product: PhoneProduct;
   onAddToCart: (product: PhoneProduct & { selectedColor?: string; selectedStorage?: string, selectedSize?: string, selectedConnectivity?: string }) => void;
+  onBuyNow: (product: PhoneProduct & { selectedColor?: string; selectedStorage?: string, selectedSize?: string, selectedConnectivity?: string }) => void;
   onBack: () => void;
   navigationOptions?: { validateOnLoad?: boolean };
 }
 
-const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToCart, onBack, navigationOptions }) => {
+const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToCart, onBuyNow, onBack, navigationOptions }) => {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   
   const availableSizes = useMemo(() => product.variants ? [...new Set(product.variants.map(v => v.size))] : [], [product.variants]);
@@ -29,6 +31,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
   const [validationErrors, setValidationErrors] = useState<{ color?: string; storage?: string; variant?: string }>({});
   const [autoAddToCart, setAutoAddToCart] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState(product.imageUrl);
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponError, setCouponError] = useState("");
+
 
   // Reset state when product changes
   useEffect(() => {
@@ -92,7 +98,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
       ? basePrice + selectedStorage.priceModifier 
       : basePrice;
 
-  const handleAddToCartClick = () => {
+  const validateSelections = () => {
     const errors: { color?: string; storage?: string, variant?: string } = {};
 
     if (product.colors && product.colors.length > 1 && !selectedColor) {
@@ -105,21 +111,30 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
         errors.variant = 'השילוב שנבחר אינו זמין. אנא בחר/י גודל וקישוריות.';
     }
 
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      return;
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const getProductToAdd = () => ({
+    ...product,
+    price: `₪${currentPrice.toLocaleString()}`,
+    selectedColor: selectedColor || undefined,
+    selectedStorage: selectedStorage?.size || undefined,
+    selectedSize: selectedSize || undefined,
+    selectedConnectivity: selectedConnectivity || undefined,
+  });
+
+
+  const handleAddToCartClick = () => {
+    if (validateSelections()) {
+      onAddToCart(getProductToAdd());
     }
-    
-    setValidationErrors({});
-    const productToAdd = {
-      ...product,
-      price: `₪${currentPrice.toLocaleString()}`,
-      selectedColor: selectedColor || undefined,
-      selectedStorage: selectedStorage?.size || undefined,
-      selectedSize: selectedSize || undefined,
-      selectedConnectivity: selectedConnectivity || undefined,
-    };
-    onAddToCart(productToAdd);
+  };
+
+  const handleBuyNowClick = () => {
+    if (validateSelections()) {
+      onBuyNow(getProductToAdd());
+    }
   };
 
   const handleColorSelect = (color: string) => {
@@ -305,10 +320,56 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
     ? 'חזרה לרשימת השעונים'
     : 'חזרה לרשימת הטלפונים';
 
+  const handleCouponSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (couponInput === '0101') {
+        if (product.manufacturerUrl) {
+            window.open(product.manufacturerUrl, '_blank', 'noopener,noreferrer');
+        }
+        setIsCouponModalOpen(false);
+        setCouponInput('');
+        setCouponError('');
+    } else {
+        setCouponError('קוד קופון לא חוקי.');
+        setCouponInput('');
+    }
+  };
+
+  const CouponModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] p-4" onClick={() => setIsCouponModalOpen(false)}>
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">הכנס קוד קופון</h3>
+            <form onSubmit={handleCouponSubmit}>
+                <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => {
+                        setCouponInput(e.target.value);
+                        if (couponError) setCouponError('');
+                    }}
+                    placeholder="הקוד הסודי..."
+                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent mb-2 text-center"
+                    autoFocus
+                />
+                {couponError && <p className="text-red-500 text-sm text-center mb-4">{couponError}</p>}
+                <div className="flex gap-3 mt-4">
+                    <button type="button" onClick={() => setIsCouponModalOpen(false)} className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                        ביטול
+                    </button>
+                    <button type="submit" className="flex-1 bg-primary text-white px-4 py-2 rounded-lg hover:bg-accent hover:text-primary transition-colors">
+                        אישור
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+  );
+
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <button onClick={onBack} className="text-blue-600 hover:underline mb-4">
+       {isCouponModalOpen && <CouponModal />}
+      <button onClick={onBack} className="text-primary hover:underline mb-4">
         &larr; {backButtonText}
       </button>
 
@@ -329,7 +390,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
                   <button 
                     key={color} 
                     onClick={() => handleColorSelect(color)}
-                    className={`w-8 h-8 rounded-full border-2 transition-transform transform hover:scale-110 ${selectedColor === color ? 'border-blue-500 ring-2 ring-offset-1 ring-blue-500' : 'border-gray-300'}`}
+                    className={`w-8 h-8 rounded-full border-2 transition-transform transform hover:scale-110 ${selectedColor === color ? 'border-accent ring-2 ring-offset-1 ring-accent' : 'border-gray-300'}`}
                     style={{ backgroundColor: getBackgroundColor(color) }}
                     aria-label={`בחר צבע ${color}`}
                   />
@@ -350,7 +411,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
                                 onClick={() => setSelectedSize(size)}
                                 className={`px-4 py-2 rounded-lg border-2 transition-colors font-semibold
                                   ${selectedSize === size
-                                    ? 'bg-blue-600 text-white border-blue-600'
+                                    ? 'bg-primary text-white border-primary'
                                     : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                                   }
                                 `}
@@ -369,7 +430,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
                                 onClick={() => setSelectedConnectivity(conn)}
                                 className={`px-4 py-2 rounded-lg border-2 transition-colors font-semibold
                                     ${selectedConnectivity === conn
-                                        ? 'bg-blue-600 text-white border-blue-600'
+                                        ? 'bg-primary text-white border-primary'
                                         : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                                     }
                                 `}
@@ -396,7 +457,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
                       ${storage.inStock === false
                           ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
                           : selectedStorage?.size === storage.size
-                              ? 'bg-blue-600 text-white border-blue-600'
+                              ? 'bg-primary text-white border-primary'
                               : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                       }
                     `}
@@ -409,33 +470,39 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onAddToC
             </div>
           )}
           
-          <p className="text-3xl font-bold text-blue-600 mb-4">₪{currentPrice.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-primary mb-6">₪{currentPrice.toLocaleString()}</p>
           
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button 
-                onClick={handleAddToCartClick}
-                className="flex-1 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                הוספה לעגלה
-              </button>
-              <button 
-                 onClick={() => setIsChatbotOpen(true)}
-                className="flex-1 bg-gray-700 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                שאל את הבוט על המוצר
-              </button>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
+                <button 
+                    onClick={handleAddToCartClick}
+                    className="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-accent hover:text-primary transition-colors"
+                >
+                    הוספה לעגלה
+                </button>
+                <button 
+                    onClick={handleBuyNowClick}
+                    className="flex-1 bg-white border-2 border-primary text-primary font-bold py-3 px-6 rounded-lg hover:bg-primary hover:text-white transition-colors"
+                >
+                    קנייה מהירה
+                </button>
             </div>
-            {product.manufacturerUrl && (
-              <a
-                href={product.manufacturerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full text-center bg-white border-2 border-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors"
-              >
-                לצפיה באתר היצרן
-              </a>
-            )}
+            <div className="flex flex-col sm:flex-row gap-3">
+                <button 
+                    onClick={() => setIsChatbotOpen(true)}
+                    className="flex-1 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                    שאל את הבוט
+                </button>
+                {product.manufacturerUrl && (
+                    <button 
+                        onClick={() => setIsCouponModalOpen(true)}
+                        className="flex-1 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                        קוד קופון
+                    </button>
+                )}
+            </div>
           </div>
         </div>
       </div>

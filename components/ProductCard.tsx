@@ -39,8 +39,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewD
         <h3 className="text-md font-semibold text-gray-800 flex-grow mb-2 h-12 leading-tight">{product.name}</h3>
         
         <div className="mt-auto pt-2">
-          <p className="text-lg font-bold text-blue-600 text-right mb-3">
-            {product.variants && product.variants.length > 0 ? 'החל מ-' : ''}{product.price}
+          <p className="text-lg font-bold text-primary text-right mb-3">
+            {/* FIX: Check if 'variants' property exists on product before accessing it */}
+            {'variants' in product && product.variants && product.variants.length > 0 ? 'החל מ-' : ''}{product.price}
           </p>
           <div className="flex gap-2">
              {onViewDetails && (
@@ -53,7 +54,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewD
             )}
             <button 
               onClick={handleAddToCartClick}
-              className="w-full bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors"
+              className="w-full bg-primary text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-accent hover:text-primary transition-colors"
             >
               הוסף לעגלה
             </button>

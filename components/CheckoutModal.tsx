@@ -16,7 +16,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items, o
 
   const subtotal = items.reduce((acc, item) => {
     const price = parseFloat(item.price.replace(/[₪,]/g, ''));
-    return acc + (isNaN(price) ? 0 : price);
+    return acc + (isNaN(price) ? 0 : price * (item.quantity || 1));
   }, 0);
 
   const handlePaymentSimulation = () => {
@@ -63,7 +63,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items, o
             </div>
           ) : isProcessing ? (
             <div className="text-center flex flex-col items-center gap-4 py-8">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
               <p className="text-lg font-semibold text-gray-700">מעבד תשלום...</p>
             </div>
           ) : (
@@ -93,26 +93,26 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items, o
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="cardName" className="block text-sm font-medium text-gray-700">שם בעל הכרטיס</label>
-                    <input type="text" id="cardName" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                    <input type="text" id="cardName" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent" />
                   </div>
                   <div>
                     <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700">מספר כרטיס</label>
-                    <input type="text" id="cardNumber" inputMode="numeric" pattern="[0-9\s]{13,19}" autoComplete="cc-number" maxLength={19} placeholder="xxxx xxxx xxxx xxxx" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                    <input type="text" id="cardNumber" inputMode="numeric" pattern="[0-9\s]{13,19}" autoComplete="cc-number" maxLength={19} placeholder="xxxx xxxx xxxx xxxx" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent" />
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
                       <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700">תוקף</label>
-                      <input type="text" id="expiryDate" placeholder="MM / YY" required pattern="(0[1-9]|1[0-2])\s*\/\s*([0-9]{2})" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                      <input type="text" id="expiryDate" placeholder="MM / YY" required pattern="(0[1-9]|1[0-2])\s*\/\s*([0-9]{2})" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent" />
                     </div>
                     <div className="flex-1">
                       <label htmlFor="cvv" className="block text-sm font-medium text-gray-700">CVV</label>
-                      <input type="text" id="cvv" inputMode="numeric" pattern="\d{3,4}" maxLength={4} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                      <input type="text" id="cvv" inputMode="numeric" pattern="\d{3,4}" maxLength={4} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent" />
                     </div>
                   </div>
                 </div>
                 {formErrors && <p className="text-red-500 text-sm mt-2">אנא מלא את כל השדות כראוי.</p>}
                 <div className="mt-6">
-                  <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                  <button type="submit" className="w-full bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-accent hover:text-primary transition-colors">
                     שלם ₪{subtotal.toLocaleString()}
                   </button>
                 </div>

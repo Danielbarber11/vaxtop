@@ -32,11 +32,11 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ categories, onCategoryClick }
                 <img
                   src={category.imageUrl}
                   alt={category.name}
-                  className="w-16 h-16 rounded-full object-contain mb-2 border-2 border-gray-200 group-hover:border-blue-500 transition-all"
+                  className="w-16 h-16 rounded-full object-contain mb-2 border-2 border-gray-200 group-hover:border-accent transition-all"
                   loading="lazy"
                   decoding="async"
                 />
-                <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600">
+                <span className="text-sm font-semibold text-gray-700 group-hover:text-accent">
                   {category.name}
                 </span>
               </div>

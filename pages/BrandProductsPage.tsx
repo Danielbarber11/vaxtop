@@ -31,11 +31,11 @@ const BrandProductsPage: React.FC<BrandProductsPageProps> = ({
   return (
     <div>
       <div className="flex items-center mb-6">
-        <button onClick={onBack} className="text-blue-600 hover:underline">
+        <button onClick={onBack} className="text-primary hover:underline">
           &larr; חזרה לדף הראשי
         </button>
-        <h1 className="text-4xl font-bold text-gray-800 mr-auto">
-          מוצרים של <span className="text-blue-600">{brandName}</span>
+        <h1 className="text-4xl font-bold text-primary mr-auto">
+          מוצרים של <span className="text-accent">{brandName}</span>
         </h1>
       </div>
       

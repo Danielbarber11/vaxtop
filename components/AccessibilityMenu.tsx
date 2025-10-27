@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 
 // Icons
 const AccessibilityIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z" />
+        <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
     </svg>
 );
 const ContrastIcon: React.FC<{ className?: string }> = ({ className }) => ( <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2V4a8 8 0 000 16z"></path></svg>);
@@ -19,15 +20,14 @@ interface AccessibilityMenuProps {
 
 const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({ onStatementClick }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   
-  // State for each setting with localStorage persistence
   const [fontSize, setFontSize] = useState(() => parseFloat(localStorage.getItem('fontSize') || '1'));
   const [isHighContrast, setIsHighContrast] = useState(() => localStorage.getItem('isHighContrast') === 'true');
   const [isGrayscale, setIsGrayscale] = useState(() => localStorage.getItem('isGrayscale') === 'true');
   const [highlightLinks, setHighlightLinks] = useState(() => localStorage.getItem('highlightLinks') === 'true');
   const [hideImages, setHideImages] = useState(() => localStorage.getItem('hideImages') === 'true');
 
-  // Apply settings and update localStorage on change
   useEffect(() => {
     document.documentElement.style.setProperty('--font-size-multiplier', String(fontSize));
     localStorage.setItem('fontSize', String(fontSize));
@@ -52,6 +52,20 @@ const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({ onStatementClick 
     document.documentElement.classList.toggle('hide-images', hideImages);
     localStorage.setItem('hideImages', String(hideImages));
   }, [hideImages]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
   
   const increaseFontSize = () => setFontSize(prev => Math.min(prev + 0.1, 1.5));
   const decreaseFontSize = () => setFontSize(prev => Math.max(prev - 0.1, 0.8));
@@ -75,9 +89,9 @@ const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({ onStatementClick 
   );
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div ref={menuRef} className="fixed bottom-6 left-6 z-50">
       {isOpen && (
-        <div className="bg-white rounded-lg shadow-xl p-3 mb-2 w-64 border border-gray-200">
+        <div className="absolute bottom-0 left-full ml-2 bg-white rounded-lg shadow-xl p-3 w-64 border border-gray-200 max-h-[calc(100vh-120px)] overflow-y-auto">
           <h3 className="font-bold mb-2 text-center text-gray-800">תפריט נגישות</h3>
           <div className="space-y-1">
 
@@ -89,25 +103,25 @@ const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({ onStatementClick 
             </AccessibilityOption>
 
             <AccessibilityOption icon={<ContrastIcon className="w-5 h-5 text-gray-600"/>} label="ניגודיות גבוהה">
-              <button onClick={() => setIsHighContrast(!isHighContrast)} aria-pressed={isHighContrast} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isHighContrast ? 'bg-blue-600' : 'bg-gray-300'}`}>
+              <button onClick={() => setIsHighContrast(!isHighContrast)} aria-pressed={isHighContrast} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isHighContrast ? 'bg-primary' : 'bg-gray-300'}`}>
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isHighContrast ? 'translate-x-6' : 'translate-x-1'}`}/>
               </button>
             </AccessibilityOption>
 
             <AccessibilityOption icon={<GrayscaleIcon className="w-5 h-5 text-gray-600"/>} label="גווני אפור">
-              <button onClick={() => setIsGrayscale(!isGrayscale)} aria-pressed={isGrayscale} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isGrayscale ? 'bg-blue-600' : 'bg-gray-300'}`}>
+              <button onClick={() => setIsGrayscale(!isGrayscale)} aria-pressed={isGrayscale} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isGrayscale ? 'bg-primary' : 'bg-gray-300'}`}>
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isGrayscale ? 'translate-x-6' : 'translate-x-1'}`}/>
               </button>
             </AccessibilityOption>
 
             <AccessibilityOption icon={<HighlightIcon className="w-5 h-5 text-gray-600"/>} label="הדגשת קישורים">
-              <button onClick={() => setHighlightLinks(!highlightLinks)} aria-pressed={highlightLinks} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${highlightLinks ? 'bg-blue-600' : 'bg-gray-300'}`}>
+              <button onClick={() => setHighlightLinks(!highlightLinks)} aria-pressed={highlightLinks} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${highlightLinks ? 'bg-primary' : 'bg-gray-300'}`}>
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${highlightLinks ? 'translate-x-6' : 'translate-x-1'}`}/>
               </button>
             </AccessibilityOption>
 
             <AccessibilityOption icon={<HideImageIcon className="w-5 h-5 text-gray-600"/>} label="הסתרת תמונות">
-              <button onClick={() => setHideImages(!hideImages)} aria-pressed={hideImages} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${hideImages ? 'bg-blue-600' : 'bg-gray-300'}`}>
+              <button onClick={() => setHideImages(!hideImages)} aria-pressed={hideImages} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${hideImages ? 'bg-primary' : 'bg-gray-300'}`}>
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${hideImages ? 'translate-x-6' : 'translate-x-1'}`}/>
               </button>
             </AccessibilityOption>
@@ -125,7 +139,7 @@ const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({ onStatementClick 
       )}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-110"
+        className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg hover:bg-accent hover:text-primary transition-all duration-300 transform hover:scale-110"
         aria-label="פתח תפריט נגישות"
         aria-expanded={isOpen}
       >

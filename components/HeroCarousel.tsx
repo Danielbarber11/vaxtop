@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { HeroSlide } from '../types';
-import { ChevronRightIcon, ChevronLeftIcon } from './IconComponents';
 
 interface HeroCarouselProps {
   slides: HeroSlide[];
@@ -16,10 +15,6 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, onButtonClick }) =>
   const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex === slides.length - 1 ? 0 : prevIndex + 1));
   }, [slides.length]);
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? slides.length - 1 : prevIndex - 1));
-  };
 
   const handleVideoEnd = useCallback(() => {
     if (videoEndTimeoutRef.current) {
@@ -61,8 +56,6 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, onButtonClick }) =>
   }, [currentIndex, slides, nextSlide]);
 
   const currentSlide = slides[currentIndex];
-  const isFold7SlideActive = currentSlide?.id === 1;
-  const hideArrows = currentSlide?.id === 2;
 
   return (
     <div
@@ -73,7 +66,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, onButtonClick }) =>
     >
       <div
         className="flex transition-transform duration-700 ease-in-out h-full"
-        style={{ transform: `translateX(${currentIndex * 100}%)` }}
+        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {slides.map((slide, index) => {
           const isCurrentSlide = currentIndex === index;
@@ -136,7 +129,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, onButtonClick }) =>
                         onClick={() => onButtonClick(slide.productId!)}
                         aria-hidden={!isCurrentSlide}
                         tabIndex={isCurrentSlide ? 0 : -1}
-                        className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white font-bold py-3 px-8 rounded-full transition-all shadow-lg transform hover:scale-105"
+                        className="bg-accent text-primary font-bold py-3 px-8 rounded-full transition-all shadow-lg transform hover:scale-105 hover:bg-opacity-90"
                       >
                         {slide.buttonText}
                       </button>
@@ -149,22 +142,6 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, onButtonClick }) =>
         })}
       </div>
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={prevSlide}
-        aria-label="הסלייד הקודם"
-        className={`absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/50 hover:bg-white/80 p-2 rounded-full transition-opacity duration-300 ${hideArrows ? 'hidden' : isFold7SlideActive ? 'md:opacity-0 group-hover:md:opacity-100' : ''}`}
-      >
-        <ChevronRightIcon className="w-6 h-6 text-gray-800" />
-      </button>
-      <button
-        onClick={nextSlide}
-        aria-label="הסלייד הבא"
-        className={`absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/50 hover:bg-white/80 p-2 rounded-full transition-opacity duration-300 ${hideArrows ? 'hidden' : isFold7SlideActive ? 'md:opacity-0 group-hover:md:opacity-100' : ''}`}
-      >
-        <ChevronLeftIcon className="w-6 h-6 text-gray-800" />
-      </button>
-
       {/* Dots */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
         {slides.map((_, index) => (
@@ -172,7 +149,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, onButtonClick }) =>
             key={index}
             onClick={() => setCurrentIndex(index)}
             aria-label={`עבור לסלייד ${index + 1}`}
-            className={`w-3 h-3 rounded-full transition-colors ${currentIndex === index ? 'bg-blue-500' : 'bg-gray-300/50 hover:bg-gray-300'}`}
+            className={`w-3 h-3 rounded-full transition-colors ${currentIndex === index ? 'bg-accent' : 'bg-gray-300/50 hover:bg-gray-300'}`}
           />
         ))}
       </div>

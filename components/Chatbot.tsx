@@ -52,7 +52,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ product, onClose }) => {
         model: 'gemini-2.5-flash',
         contents: `User question: "${input}"`,
         config: {
-          systemInstruction: `You are 'ShopZone Bot', a helpful and knowledgeable virtual assistant for an e-commerce store. Your goal is to answer questions about the "${product.name}".
+          systemInstruction: `You are 'vaxtop Bot', a helpful and knowledgeable virtual assistant for an e-commerce store. Your goal is to answer questions about the "${product.name}".
 
 First, use the specific information provided below as your primary source of truth. This is the official data for the model we sell.
 --- OFFICIAL STORE DATA START ---

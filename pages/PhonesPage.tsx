@@ -32,10 +32,10 @@ const PhonesPage: React.FC<PhonesPageProps> = ({ onAddToCart, onViewDetails, onB
   return (
     <div>
       <div className="flex items-center mb-6">
-        <button onClick={onBack} className="text-blue-600 hover:underline">
+        <button onClick={onBack} className="text-primary hover:underline">
           &larr; חזרה לדף הראשי
         </button>
-        <h1 className="text-4xl font-bold text-gray-800 mr-auto">טלפונים סלולריים</h1>
+        <h1 className="text-4xl font-bold text-primary mr-auto">טלפונים סלולריים</h1>
       </div>
       
       <div className="flex justify-center flex-wrap gap-3 mb-8 bg-white p-4 rounded-lg shadow-sm border">
@@ -45,7 +45,7 @@ const PhonesPage: React.FC<PhonesPageProps> = ({ onAddToCart, onViewDetails, onB
             onClick={() => setSelectedBrand(brand)}
             className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-200 ease-in-out transform hover:scale-105
               ${selectedBrand === brand
-                ? 'bg-blue-600 text-white shadow-md'
+                ? 'bg-primary text-white shadow-md'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }
             `}
@@ -61,7 +61,7 @@ const PhonesPage: React.FC<PhonesPageProps> = ({ onAddToCart, onViewDetails, onB
           placeholder="חיפוש טלפון..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full py-2 pl-4 pr-10 text-gray-700 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full py-2 pl-4 pr-10 text-gray-700 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-accent"
         />
         <div className="absolute inset-y-0 left-0 flex items-center justify-center w-12 text-gray-500">
           <SearchIcon className="w-5 h-5" />
