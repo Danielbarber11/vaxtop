@@ -9,115 +9,69 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-      html {
-        /* Use CSS variable to control root font size for Tailwind rem units */
-        font-size: calc(16px * var(--font-size-multiplier, 1));
-      }
-      body {
-        font-family: 'Assistant', sans-serif;
-        /* Font size is now inherited from html, no need to set it here */
-      }
-
-      /* New Accessibility Styles */
-      html.grayscale {
-        filter: grayscale(100%);
-      }
+      /* Use CSS variable to control root font size for Tailwind rem units */
+      html { font-size: calc(16px * var(--font-size-multiplier, 1)); }
+      body { font-family: 'Assistant', sans-serif; }
+      /* Accessibility helpers */
+      html.grayscale { filter: grayscale(100%); }
       html.highlight-links a:not([role="button"]),
       html.highlight-links button,
-      html.highlight-links a[role="button"] {
-        outline: 3px solid #ffeb3b !important;
-        outline-offset: 2px;
-        text-decoration: underline !important;
-      }
+      html.highlight-links a[role="button"] { outline: 3px solid #ffeb3b !important; outline-offset: 2px; text-decoration: underline !important; }
       html.hide-images img,
-      html.hide-images video {
-        visibility: hidden !important;
-      }
-
-      /* High Contrast Mode Styles */
-      html.high-contrast {
-        background-color: #000 !important;
-        color: #fff !important;
-      }
+      html.hide-images video { visibility: hidden !important; }
+      /* High Contrast Mode */
+      html.high-contrast { background-color: #000 !important; color: #fff !important; }
       html.high-contrast body,
       html.high-contrast .bg-white,
       html.high-contrast .bg-gray-50,
       html.high-contrast .bg-gray-100,
-      html.high-contrast .bg-gray-800 {
-        background-color: #000 !important;
-        color: #fff !important;
-      }
+      html.high-contrast .bg-gray-800 { background-color: #000 !important; color: #fff !important; }
       html.high-contrast img,
-      html.high-contrast video {
-        filter: contrast(110%) brightness(90%);
-      }
+      html.high-contrast video { filter: contrast(110%) brightness(90%); }
       html.high-contrast .bg-white,
       html.high-contrast header,
       html.high-contrast .border,
       html.high-contrast .border-b,
       html.high-contrast .border-t,
       html.high-contrast .border-gray-200,
-      html.high-contrast .border-gray-300 {
-        border-color: #fff !important;
-      }
+      html.high-contrast .border-gray-300 { border-color: #fff !important; }
       html.high-contrast .text-gray-900,
       html.high-contrast .text-gray-800,
       html.high-contrast .text-gray-700,
       html.high-contrast .text-gray-600,
       html.high-contrast .text-gray-500,
       html.high-contrast .text-gray-400,
-      html.high-contrast .text-gray-300 {
-        color: #fff !important;
-      }
+      html.high-contrast .text-gray-300 { color: #fff !important; }
       html.high-contrast .text-blue-600,
-      html.high-contrast .text-blue-500 {
-        color: #60a5fa !important;
-      }
+      html.high-contrast .text-blue-500 { color: #60a5fa !important; }
       html.high-contrast button,
-      html.high-contrast a[role="button"] {
-        border: 2px solid #fff !important;
-      }
+      html.high-contrast a[role="button"] { border: 2px solid #fff !important; }
       html.high-contrast button.bg-blue-600,
-      html.high-contrast button.bg-blue-500 {
-        background-color: #000 !important;
-        color: #fff !important;
-        border-color: #60a5fa !important;
-      }
+      html.high-contrast button.bg-blue-500 { background-color: #000 !important; color: #fff !important; border-color: #60a5fa !important; }
       html.high-contrast input,
       html.high-contrast .bg-gray-100,
-      html.high-contrast .bg-gray-200 {
-        background-color: #333 !important;
-        color: #fff !important;
-        border-color: #777 !important;
-      }
+      html.high-contrast .bg-gray-200 { background-color: #333 !important; color: #fff !important; border-color: #777 !important; }
       html.high-contrast .shadow-md,
       html.high-contrast .shadow-lg,
       html.high-contrast .shadow-xl,
-      html.high-contrast .shadow-2xl {
-        box-shadow: 0 0 0 1px #fff;
-      }
-      html.high-contrast .hover\:bg-gray-300:hover {
-        background-color: #444 !important;
-      }
-      html.high-contrast *:focus {
-        outline: 3px solid #ffeb3b !important;
-        outline-offset: 2px;
-      }
+      html.high-contrast .shadow-2xl { box-shadow: 0 0 0 1px #fff; }
+      html.high-contrast .hover\:bg-gray-300:hover { background-color: #444 !important; }
+      html.high-contrast *:focus { outline: 3px solid #ffeb3b !important; outline-offset: 2px; }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.23.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://aistudiocdn.com/react@^19.2.0",
+        "react/": "https://aistudiocdn.com/react@^19.2.0/",
+        "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.23.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+      }
+    }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script src="./assets/index-XXX.js" type="module"></script>
   </body>
 </html>
