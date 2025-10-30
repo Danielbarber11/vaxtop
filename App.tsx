@@ -11,6 +11,7 @@ import CartSidebar from './components/CartSidebar';
 import { heroSlides, categories, popularProducts, electricalProducts, homeProducts, brands, promotions, phoneProducts, smartwatchProducts } from './constants';
 import type { Product, PhoneProduct, CartItem } from './types';
 import AccessibilityMenu from './components/AccessibilityMenu';
+import { useAuth } from './context/AuthContext';
 
 const PhonesPage = lazy(() => import('./pages/PhonesPage'));
 const SmartwatchesPage = lazy(() => import('./pages/SmartwatchesPage'));
