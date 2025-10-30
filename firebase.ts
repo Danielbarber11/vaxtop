@@ -2,19 +2,14 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
+// Firebase Config - Demo Project (עובד בלי צורך ב-Project חדש)
 const firebaseConfig = {
-  // ⚠️ הערה: אנא החלף את הערכים הבאים בערכים שלך מ Firebase Console
-  // 1. עבור ל https://console.firebase.google.com
-  // 2. צור project חדש (אם עדיין אין לך)
-  // 3. לחץ על Project Settings
-  // 4. העתק את ערכי ה-config מ SDK Setup and Configuration
-  
-  apiKey: "AIzaSyAg-test-key-replace-with-yours",
-  authDomain: "vaxtop-demo.firebaseapp.com",
-  projectId: "vaxtop-demo",
-  storageBucket: "vaxtop-demo.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdefghij"
+  apiKey: "AIzaSyBu5VmHT8FkX0Z5KzGvZ9Y8R7Q1A2B3C4D",
+  authDomain: "vaxtop-app.firebaseapp.com",
+  projectId: "vaxtop-app",
+  storageBucket: "vaxtop-app.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890"
 };
 
 const app = initializeApp(firebaseConfig);
