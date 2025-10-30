@@ -1,39 +1,69 @@
-import { collection, addDoc, getDocs, deleteDoc, doc, query, where, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { getMockDatabase, Product } from './MockDatabase';
 
-export interface UserProduct {
-  id?: string;
+export interface UserProduct extends Product {
   userId: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  creator: string;
-  createdAt?: Date;
 }
 
-export const addProduct = async (userId: string, product: Omit<UserProduct, 'userId' | 'id' | 'createdAt'>) => {
-  return await addDoc(collection(db, 'userProducts'), {
+const db = getMockDatabase();
+
+// Add a new product
+export const addProduct = async (
+  userId: string,
+  product: Omit<UserProduct, 'id' | 'userId' | 'createdAt'>
+): Promise<string> => {
+  const id = Date.now().toString();
+  const newProduct: Product = {
     ...product,
+    id,
     userId,
-    createdAt: new Date()
-  });
+    createdAt: Date.now(),
+  };
+  await db.addProduct(newProduct);
+  return id;
 };
 
-export const getUserProducts = async (userId: string) => {
-  const q = query(collection(db, 'userProducts'), where('userId', '==', userId));
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+// Get all products for a specific user
+export const getUserProducts = async (userId: string): Promise<Product[]> => {
+  const allProducts = await db.getAllProducts();
+  return allProducts.filter((p) => p.userId === userId);
 };
 
-export const getAllPublicProducts = async () => {
-  const snapshot = await getDocs(collection(db, 'userProducts'));
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+// Get all public products (visible to all users)
+export const getAllPublicProducts = async (): Promise<Product[]> => {
+  return await db.getAllProducts();
 };
 
-export const deleteProduct = async (productId: string) => {
-  await deleteDoc(doc(db, 'userProducts', productId));
+// Get a single product by ID
+export const getProduct = async (id: string): Promise<Product | null> => {
+  return await db.getProduct(id);
 };
 
-export const updateProduct = async (productId: string, updates: Partial<UserProduct>) => {
-  await updateDoc(doc(db, 'userProducts', productId), updates);
+// Update a product
+export const updateProduct = async (
+  id: string,
+  updates: Partial<Product>
+): Promise<void> => {
+  await db.updateProduct(id, updates);
+};
+
+// Delete a product
+export const deleteProduct = async (id: string): Promise<void> => {
+  await db.deleteProduct(id);
+};
+
+// Subscribe to product updates
+export const subscribeToProducts = (
+  callback: (products: Product[]) => void
+): (() => void) => {
+  return db.subscribe(callback);
+};
+
+export default {
+  addProduct,
+  getUserProducts,
+  getAllPublicProducts,
+  getProduct,
+  updateProduct,
+  deleteProduct,
+  subscribeToProducts,
 };
